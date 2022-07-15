@@ -256,13 +256,13 @@ func generateNamedLogger(key string, options defaultLogOptions) *LogDescription 
 
 
 func newAuthorizationLogService() {
-	EnableAccessLog = Cfg.Section("log").Key("ENABLE_AUTHORIZATION_LOG").MustBool(false)
-	AccessLogTemplate = Cfg.Section("log").Key("AUTHORIZATION_LOG_TEMPLATE").MustString(
-		`{{Granter}} - {{Grantee}} {{Time "[02/Jan/2006:15:04:05 -0700]" }} {{AccessType}} "{{RepoURI}} "`,
+	EnableAuthorizationLog = Cfg.Section("log").Key("ENABLE_AUTHORIZATION_LOG").MustBool(false)
+	AuthorizationLogTemplate = Cfg.Section("log").Key("AUTHORIZATION_LOG_TEMPLATE").MustString(
+		`{{Granter}} - {{Grantee}} {{Time "[02/Jan/2006:15:04:05 -0700]" }} {{AuthorizationType}} "{{RepoURI}} "`,
 	)
-	// the `MustString` updates the default value, and `log.ACCESS` is used by `generateNamedLogger("access")` later
+	// the `MustString` updates the default value, and `log.AUTHORIZATION` is used by `generateNamedLogger("authorization")` later
 	_ = Cfg.Section("log").Key("AUTHORIZATION_LOG_MODE").MustString("file")
-	if EnableAccessLog {
+	if EnableAuthorizationLog {
 		options := newDefaultLogOptions()
 		options.filename = filepath.Join(LogRootPath, "authorization.log")
 		options.flags = "" // For the router we don't want any prefixed flags
@@ -373,6 +373,7 @@ func NewLogServices(disableConsole bool) {
 	newLogService()
 	newRouterLogService()
 	newAccessLogService()
+	newAuthorizationLogService()
 	NewXORMLogService(disableConsole)
 }
 
